@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  MongoDBPrimary:
+    container_name: MongoDBPrimary
+    image: mongo:5
+    networks:
+      - mongo-replica-set
+    ports:
+      - "27017:27017"
+    command: mongod --replSet myReplicaSet --bind_ip localhost,MongoDBPrimary
+
+  MongoDBSec1:
+    container_name: MongoDBSec1
+    image: mongo:5
+    networks:
+      - mongo-replica-set
+    ports:
+      - "27018:27017"
+    command: mongod --replSet myReplicaSet --bind_ip localhost,MongoDBSec1
+
+  MongoDBSec2:
+    container_name: MongoDBSec2
+    image: mongo:5
+    networks:
+      - mongo-replica-set
+    ports:
+      - "27019:27017"
+    command: mongod --replSet myReplicaSet --bind_ip localhost,MongoDBSec2
+
+  mongo-init:
+    image: mongo:5
+    container_name: mongo-init
+    depends_on:
+      - MongoDBPrimary
+      - MongoDBSec1
+      - MongoDBSec2
+    networks:
+      - mongo-replica-set
+    entrypoint: >
+      bash -c "sleep 5 && 
+      mongosh --host MongoDBPrimary:27017 --eval 'rs.initiate({
+        _id: \"myReplicaSet\",
+        members: [
+          { _id: 0, host: \"MongoDBPrimary:27017\" },
+          { _id: 1, host: \"MongoDBSec1:27017\" },
+          { _id: 2, host: \"MongoDBSec2:27017\" }
+        ]
+      })'"
+
+networks:
+  mongo-replica-set:
+    driver: bridge
