@@ -161,7 +161,7 @@ class ObjectDetectionBot(Bot):
 
                 formatted_result = '\n'.join([f'{label}: {count}' for label, count in label_counts.items()])
 
-                # send the returned results to the Telegram end-user
+                #  send the returned results to the Telegram end-user
                 self.send_text(msg['chat']['id'], f'Detected objects:\n {formatted_result}')
             else:
                 logger.error(f"Error with prediction: {response.status_code} - {response.text}")
