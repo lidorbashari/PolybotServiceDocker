@@ -37,10 +37,6 @@ class Bot:
         return 'photo' in msg
 
     def download_user_photo(self, msg):
-        """
-        Downloads the photos that sent to the Bot to `photos` directory (should be existed)
-        :return:
-        """
         if not self.is_current_msg_photo(msg):
             raise RuntimeError(f'Message content of type \'photo\' expected')
 
@@ -66,7 +62,6 @@ class Bot:
         )
 
     def handle_message(self, msg):
-        """Bot Main message handler"""
         logger.info(f'Incoming message: {msg}')
         self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
 
