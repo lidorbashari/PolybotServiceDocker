@@ -94,7 +94,7 @@ jobs:
             POLYBOT_IMG_NAME=${{ secrets.DOCKERHUB_USERNAME }}/polybot:${{ github.run_number }}
             YOLO5_IMG_NAME=${{ secrets.DOCKERHUB_USERNAME }}/yolo5:${{ github.run_number }}
             TELEGRAM_TOKEN="${{ secrets.TELEGRAM_BOT_TOKEN }}"
-            TELEGRAM_APP_URL=${NGROK_DOMAIN}
+            TELEGRAM_APP_URL="${{ secrets.NGROK }}"
             S3_BUCKET_NAME=lidorbashari
             S3_REGION=eu-north-1
             """ > .env
