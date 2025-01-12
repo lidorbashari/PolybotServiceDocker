@@ -9,7 +9,8 @@ import boto3
 
 class Bot:
     def __init__(self, telegram_token, telegram_chat_url, s3_bucket_name, s3_region, s3_client=None):
-        self.telegram_bot_client = telebot.TeleBot(telegram_token)
+        self.telegram_bot_client = telebot.TeleBot(telegram_chat_url)
+
         self.S3_BUCKET_NAME = s3_bucket_name
         self.S3_REGION = s3_region
         if s3_client:
