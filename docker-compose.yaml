@@ -65,12 +65,8 @@ services:
   polybot:
     container_name: polybot
     image: ${POLYBOT_IMG_NAME}
-    environment:
-      TELEGRAM_TOKEN: ${POLYBOT_IMG_NAME}
-      TELEGRAM_APP_URL: ${TELEGRAM_APP_URL}
-      S3_BUCKET_NAME: ${S3_BUCKET_NAME}
-      S3_REGION: ${S3_REGION}
-
+    env_file:
+      - .env
     ports:
       - "8443:8443"
     networks:

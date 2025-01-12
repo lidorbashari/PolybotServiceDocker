@@ -141,7 +141,7 @@ class ObjectDetectionBot(Bot):
 
     def send_to_yolo5(self, img_name, msg):
         try:
-            url = f'http://localhost:8081/predict'
+            url = f'http://yolo5:8081/predict'
             logger.info(f"Sending image {img_name} to YOLOv5 for prediction.")
 
             # Send image name to the YOLOv5 API
