@@ -9,11 +9,10 @@ import boto3
 
 class Bot:
 
-    def __init__(self, token, telegram_chat_url, s3_bucket_name, s3_region, ec2_url, s3_client=None):
+    def __init__(self, token, telegram_chat_url, s3_bucket_name, s3_region, s3_client=None):
         self.telegram_bot_client = telebot.TeleBot(token)
         self.S3_BUCKET_NAME = s3_bucket_name
         self.S3_REGION = s3_region
-        self.EC2_URL = ec2_url
         if s3_client:
             self.s3_client = s3_client
         else:
@@ -142,7 +141,7 @@ class ObjectDetectionBot(Bot):
 
     def send_to_yolo5(self, img_name, msg):
         try:
-            url = f'http://{self.EC2_URL}:8081/predict'
+            url = f'http://localhost:8081/predict'
             logger.info(f"Sending image {img_name} to YOLOv5 for prediction.")
 
             # Send image name to the YOLOv5 API

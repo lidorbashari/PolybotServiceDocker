@@ -12,9 +12,8 @@ TELEGRAM_TOKEN = os.environ['TELEGRAM_TOKEN']
 TELEGRAM_APP_URL = os.environ['TELEGRAM_APP_URL']
 S3_BUCKET_NAME = os.environ['S3_BUCKET_NAME']
 S3_REGION = os.environ['S3_REGION']
-EC2_URL = os.environ['EC2_URL']
 s3_client = boto3.client('s3')
-bot = ObjectDetectionBot(TELEGRAM_TOKEN, TELEGRAM_APP_URL, S3_BUCKET_NAME, S3_REGION, EC2_URL, s3_client)
+bot = ObjectDetectionBot(TELEGRAM_TOKEN, TELEGRAM_APP_URL, S3_BUCKET_NAME, S3_REGION, s3_client)
 
 
 
