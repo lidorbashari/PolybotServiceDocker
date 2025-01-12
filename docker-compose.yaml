@@ -70,6 +70,7 @@ services:
       TELEGRAM_APP_URL: ${TELEGRAM_APP_URL}
       S3_BUCKET_NAME: ${S3_BUCKET_NAME}
       S3_REGION: ${S3_REGION}
+
     ports:
       - "8443:8443"
     networks:
