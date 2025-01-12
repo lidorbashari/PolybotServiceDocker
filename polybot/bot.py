@@ -118,7 +118,7 @@ class ObjectDetectionBot(Bot):
                             label_counts[label_class] = 1
                     formatted_result = '\n'.join([f'{label}: {count}' for label, count in label_counts.items()])
 
-                    self.send_text(msg['chat']['id'], f'Detected objects:\n {formatted_result}')
+                    self.send_text(msg['chat']['id'], f'Detected lidor objects:\n {formatted_result}')
                 else:
                     self.send_text(msg['chat']['id'], "No objects detected in the image.")
             else:

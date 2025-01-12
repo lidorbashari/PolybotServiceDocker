@@ -66,7 +66,7 @@ def predict():
     try:
         # Upload predicted image back to S3
         s3.upload_file(str(predicted_img_path), images_bucket, s3_image_key_upload)
-        logger.info(f"File uploaded successfully to {images_bucket}/{s3_image_key_upload}")
+        logger.info(f"File uploaded successfully to: {images_bucket}/{s3_image_key_upload}")
     except FileNotFoundError:
         logger.error("The file was not found.")
         return "Predicted image not found", 404
