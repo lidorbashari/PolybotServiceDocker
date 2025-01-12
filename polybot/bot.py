@@ -152,7 +152,6 @@ class ObjectDetectionBot(Bot):
             response.raise_for_status() # Raise HTTPError for bad responses (4xx or 5xx)
             response_data = response.json()
 
-            # לוג של ה-response שמתקבל מ-YOLOv5
             logger.info(f"Response from YOLOv5: {response.status_code} - {response.text}")
 
             # check if response is okay and return
