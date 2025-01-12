@@ -9,10 +9,11 @@ import boto3
 
 class Bot:
 
-    def __init__(self, token, telegram_chat_url, s3_bucket_name, s3_region, s3_client=None):
+    def __init__(self, token, telegram_chat_url, s3_bucket_name, s3_region, ec2_url, s3_client=None):
         self.telegram_bot_client = telebot.TeleBot(token)
         self.S3_BUCKET_NAME = s3_bucket_name
         self.S3_REGION = s3_region
+        self.EC2_URL = ec2_url
         if s3_client:
             self.s3_client = s3_client
         else:
@@ -95,29 +96,35 @@ class ObjectDetectionBot(Bot):
             # Post request to YOLOv5
             img_name = os.path.basename(photo_path)
             logger.info(f"Sending image {img_name} to YOLOv5 for prediction.")
-            #prediction_result = self.send_to_yolo5(img_name, msg)
-            self.send_to_yolo5(img_name, msg)
-            '''
+            prediction_result = self.send_to_yolo5(img_name, msg)
+
+
             if prediction_result:
-                predicted_image_path = prediction_result.get('predicted_img_path', '')
-                predicted_image_url = f"https://{self.S3_BUCKET_NAME}.s3.amazonaws.com/{predicted_image_path}"
-                logger.info(f"Prediction result: {predicted_image_url}")
-                self.send_text(msg['chat']['id'], f"Prediction completed: {predicted_image_url}")
-                if 'predictions' in prediction_result:
-                    detected_objects = [item['class'] for item in prediction_result['predictions']]
-                    object_counts = {obj: detected_objects.count(obj) for obj in set(detected_objects)}
-                    results_text = "Detected objects:\n"
-                    for obj, count in object_counts.items():
-                        results_text += f"{obj}: {count}\n"
+                logger.info(f"Prediction result: {prediction_result}")
 
-                    # Send object details
-                    self.send_text(msg['chat']['id'], results_text)
+                #  if 'predicted_img_path' in prediction_result:
+                #    predicted_image_path = prediction_result.get('predicted_img_path', '')
+                #    predicted_image_url = f"https://{self.S3_BUCKET_NAME}.s3.amazonaws.com/{predicted_image_path}"
+                #    self.send_text(msg['chat']['id'], f"Prediction completed: {predicted_image_url}")
 
+                if 'labels' in prediction_result:
+                    labels = prediction_result['labels']
+                    label_counts = {}
+                    for label in labels:
+                        label_class = label['class']
+                        if label_class in label_counts:
+                            label_counts[label_class] += 1
+                        else:
+                            label_counts[label_class] = 1
+                    formatted_result = '\n'.join([f'{label}: {count}' for label, count in label_counts.items()])
+
+                    self.send_text(msg['chat']['id'], f'Detected objects:\n {formatted_result}')
                 else:
                     self.send_text(msg['chat']['id'], "No objects detected in the image.")
             else:
-                self.send_text(msg['chat']['id'], "Sorry, there was an issue processing the image.")
-                '''
+                 logger.info(f"No prediction result was found from yolo5")
+                 self.send_text(msg['chat']['id'], "Sorry, there was an issue processing the image.")
+
 
         except Exception as e:
             logger.error(f"Error processing photo message: {e}")
@@ -135,41 +142,26 @@ class ObjectDetectionBot(Bot):
 
     def send_to_yolo5(self, img_name, msg):
         try:
-            url = "http://13.51.85.118:8081/predict"
+            url = f'http://{self.EC2_URL}:8081/predict'
             logger.info(f"Sending image {img_name} to YOLOv5 for prediction.")
 
             # Send image name to the YOLOv5 API
             response = requests.post(
-                "http://13.51.85.118:8081/predict",
+                url,
                 params={"imgName": f"predictions/{img_name}"}
             )
+            response.raise_for_status() # Raise HTTPError for bad responses (4xx or 5xx)
             response_data = response.json()
 
             # לוג של ה-response שמתקבל מ-YOLOv5
             logger.info(f"Response from YOLOv5: {response.status_code} - {response.text}")
 
+            # check if response is okay and return
             if response.status_code == 200:
-                # אם התשובה תקינה, נדפיס את התוצאות
-                labels = response_data.get('labels', [])
-                label_counts = {}
-                for label in labels:
-                    label_class = label['class']
-                    if label_class in label_counts:
-                        label_counts[label_class] += 1
-                    else:
-                        label_counts[label_class] = 1
-
-                formatted_result = '\n'.join([f'{label}: {count}' for label, count in label_counts.items()])
-
-                #  send the returned results to the Telegram end-user
-                self.send_text(msg['chat']['id'], f'Detected objects:\n {formatted_result}')
+                return response_data
             else:
                 logger.error(f"Error with prediction: {response.status_code} - {response.text}")
                 return None
-        except Exception as e:
+        except requests.exceptions.RequestException as e:
             logger.error(f"Failed to send to YOLOv5: {e}")
             return None
-
-            # TODO upload the photo to S3
-            # TODO send an HTTP request to the `yolo5` service for prediction
-            # TODO send the returned results to the Telegram end-user

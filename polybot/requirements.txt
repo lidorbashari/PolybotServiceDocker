@@ -4,3 +4,5 @@ requests>=2.31.0
 flask>=2.3.2
 matplotlib
 pyyaml
+boto3
+python-dotenv
