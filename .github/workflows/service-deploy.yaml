@@ -26,8 +26,9 @@ jobs:
           # Login to DockerHub (comment out if you don't use DockerHub):         
           docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
 
-          IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/polybot:${{ github.run_number }}
+          IMAGE_NAME=polybot:${{ github.run_number }}
           docker build -t $IMAGE_NAME .
+          docker tag $IMAGE_NAME lidorbashari/$IMAGE_NAME
           docker push $IMAGE_NAME
 
   Yolo5Build:
@@ -48,6 +49,7 @@ jobs:
 
           IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/yolo5:${{ github.run_number }}
           docker build -t $IMAGE_NAME .
+          docker tag $IMAGE_NAME lidorbashari/$IMAGE_NAME
           docker push $IMAGE_NAME
 
   Deploy:
