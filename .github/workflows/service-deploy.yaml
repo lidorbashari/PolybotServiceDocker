@@ -98,6 +98,7 @@ jobs:
             S3_BUCKET_NAME=lidorbashari
             S3_REGION=eu-north-1
             """ > .env
+            echo "hi"
             
             #  Take the service down
             docker compose down
