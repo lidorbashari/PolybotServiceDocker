@@ -10,7 +10,6 @@ import boto3
 class Bot:
     def __init__(self, telegram_token, telegram_chat_url, s3_bucket_name, s3_region, s3_client=None):
         self.telegram_bot_client = telebot.TeleBot(telegram_token)
-
         self.S3_BUCKET_NAME = s3_bucket_name
         self.S3_REGION = s3_region
         if s3_client:
@@ -74,7 +73,7 @@ class ObjectDetectionBot(Bot):
         if self.is_current_msg_photo(msg):
             self.process_photo_message(msg)
         else:
-            self.send_text(msg['chat']['id'], "תכניס תמונה בבקשה")
+            self.send_text(msg['chat']['id'], "Please send a picture")
 
     def process_photo_message(self, msg):
         try:
@@ -95,12 +94,6 @@ class ObjectDetectionBot(Bot):
 
             if prediction_result:
                 logger.info(f"Prediction result: {prediction_result}")
-
-                #  if 'predicted_img_path' in prediction_result:
-                #    predicted_image_path = prediction_result.get('predicted_img_path', '')
-                #    predicted_image_url = f"https://{self.S3_BUCKET_NAME}.s3.amazonaws.com/{predicted_image_path}"
-                #    self.send_text(msg['chat']['id'], f"Prediction completed: {predicted_image_url}")
-
                 if 'labels' in prediction_result:
                     labels = prediction_result['labels']
                     label_counts = {}
@@ -112,7 +105,7 @@ class ObjectDetectionBot(Bot):
                             label_counts[label_class] = 1
                     formatted_result = '\n'.join([f'{label}: {count}' for label, count in label_counts.items()])
 
-                    self.send_text(msg['chat']['id'], f'Detected lidor objects:\n {formatted_result}')
+                    self.send_text(msg['chat']['id'], f'Detected objects:\n {formatted_result}')
                 else:
                     self.send_text(msg['chat']['id'], "No objects detected in the image.")
             else:
