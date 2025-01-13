@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  EC2_PUBLIC_IP: 13.53.177.47
+  EC2_PUBLIC_IP: 13.60.105.241
 jobs:
   PolybotBuild:
     runs-on: ubuntu-latest
@@ -61,6 +61,15 @@ jobs:
       - name: Checkout the repo code
         uses: actions/checkout@v2
 
+      - name: Clean up unused Docker images on the EC2
+          uses: appleboy/ssh-action@master
+          with:
+            host: ${{ env.EC2_PUBLIC_IP }}
+            username: ubuntu
+            key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+            script: |
+              docker image prune -a -f
+
       - name: Copy Compose files to the EC2
         uses: appleboy/scp-action@master
         with:
@@ -98,7 +107,6 @@ jobs:
             S3_BUCKET_NAME=lidorbashari
             S3_REGION=eu-north-1
             """ > .env
-            echo "hihi"
             
             #  Take the service down
             docker compose down
