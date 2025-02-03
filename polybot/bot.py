@@ -73,7 +73,7 @@ class ObjectDetectionBot(Bot):
         if self.is_current_msg_photo(msg):
             self.process_photo_message(msg)
         else:
-            self.send_text(msg['chat']['id'], "Please send a picture!")
+            self.send_text(msg['chat']['id'], "Please send a picture!!")
 
     def process_photo_message(self, msg):
         try:
